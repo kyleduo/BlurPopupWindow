@@ -2,6 +2,7 @@ package com.kyleduo.blurpopupwindow;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -44,7 +45,7 @@ public class IOSMenu extends BlurPopupWindow {
 
 				getContentView().setVisibility(VISIBLE);
 				int height = getContentView().getMeasuredHeight();
-				ObjectAnimator.ofFloat(getContentView(), "translationY", height, 0).setDuration(300).start();
+				ObjectAnimator.ofFloat(getContentView(), "translationY", height, 0).setDuration(getAnimatingDuration()).start();
 			}
 		});
 	}
@@ -53,6 +54,17 @@ public class IOSMenu extends BlurPopupWindow {
 	protected void onDismiss() {
 		super.onDismiss();
 		int height = getContentView().getMeasuredHeight();
-		ObjectAnimator.ofFloat(getContentView(), "translationY", 0, height).setDuration(300).start();
+		ObjectAnimator.ofFloat(getContentView(), "translationY", 0, height).setDuration(getAnimatingDuration()).start();
+	}
+
+	@Override
+	protected ObjectAnimator createOnShowAnimator() {
+		return null;
+	}
+
+	@Override
+	protected void onBlurredImageGot(Bitmap bitmap) {
+		super.onBlurredImageGot(bitmap);
+		ObjectAnimator.ofFloat(mBlurView, "alpha", 0, 1.f).setDuration(getAnimatingDuration()).start();
 	}
 }

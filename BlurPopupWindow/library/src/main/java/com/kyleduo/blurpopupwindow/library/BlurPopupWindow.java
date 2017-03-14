@@ -33,16 +33,18 @@ public class BlurPopupWindow extends FrameLayout {
 	private static final String TAG = "BlurPopupWindow";
 
 	private static final float DEFAULT_BLUR_RADIUS = 10;
-	private static final float DEFAULT_SACLE_RATIO = 0.4f;
+	private static final float DEFAULT_SCALE_RATIO = 0.4f;
+	private static final long DEFAULT_ANIMATING_DURATION = 300;
 
 	private Activity mActivity;
 	private View mContentView;
-	private ImageView mBlurView;
+	protected ImageView mBlurView;
 	private boolean mAnimating;
 	private int mTintColor;
 	private View mAnchorView;
 	private float mBlurRadius;
 	private float mScaleRatio;
+	private long mAnimatingDuration;
 
 	public BlurPopupWindow(@NonNull Context context) {
 		super(context);
@@ -56,7 +58,8 @@ public class BlurPopupWindow extends FrameLayout {
 		mActivity = (Activity) getContext();
 
 		mBlurRadius = DEFAULT_BLUR_RADIUS;
-		mScaleRatio = DEFAULT_SACLE_RATIO;
+		mScaleRatio = DEFAULT_SCALE_RATIO;
+		mAnimatingDuration = DEFAULT_ANIMATING_DURATION;
 
 		setFocusable(true);
 		setFocusableInTouchMode(true);
@@ -125,7 +128,7 @@ public class BlurPopupWindow extends FrameLayout {
 		new BlurTask(mActivity.getWindow().getDecorView(), this, new BlurTask.BlurTaskCallback() {
 			@Override
 			public void onBlurFinish(Bitmap bitmap) {
-				mBlurView.setImageBitmap(bitmap);
+				onBlurredImageGot(bitmap);
 			}
 		}).execute();
 
@@ -192,6 +195,10 @@ public class BlurPopupWindow extends FrameLayout {
 		}
 	}
 
+	protected void onBlurredImageGot(Bitmap bitmap) {
+		mBlurView.setImageBitmap(bitmap);
+	}
+
 	protected void onShow() {
 
 	}
@@ -202,11 +209,11 @@ public class BlurPopupWindow extends FrameLayout {
 
 	protected ObjectAnimator createOnShowAnimator() {
 		setAlpha(0);
-		return ObjectAnimator.ofFloat(this, "alpha", getAlpha(), 1).setDuration(300);
+		return ObjectAnimator.ofFloat(this, "alpha", getAlpha(), 1).setDuration(mAnimatingDuration);
 	}
 
 	protected ObjectAnimator createOnDismissAnimator() {
-		return ObjectAnimator.ofFloat(this, "alpha", getAlpha(), 0).setDuration(300);
+		return ObjectAnimator.ofFloat(this, "alpha", getAlpha(), 0).setDuration(mAnimatingDuration);
 	}
 
 	public int getTintColor() {
@@ -239,6 +246,14 @@ public class BlurPopupWindow extends FrameLayout {
 
 	public void setScaleRatio(float scaleRatio) {
 		mScaleRatio = scaleRatio;
+	}
+
+	public long getAnimatingDuration() {
+		return mAnimatingDuration;
+	}
+
+	public void setAnimatingDuration(long animatingDuration) {
+		mAnimatingDuration = animatingDuration;
 	}
 
 	private final static class BlurTask extends AsyncTask<Void, Void, Bitmap> {
