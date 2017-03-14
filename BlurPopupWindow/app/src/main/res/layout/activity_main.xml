@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="#fafafa"
+	tools:context="com.kyleduo.blurpopupwindow.MainActivity">
+
+	<android.support.v7.widget.Toolbar
+		android:id="@+id/toolbar"
+		style="@style/Widget.AppCompat.Toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="56dp"
+		android:background="@color/colorPrimary"
+		app:titleTextColor="@android:color/white"/>
+
+	<Button
+		android:id="@+id/button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="70dp"
+		android:text="Show Popup"/>
+
+	<TextView
+		android:id="@+id/text"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/button"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="12dp"
+		android:background="@android:color/white"
+		android:padding="16dp"
+		android:text="This class represents the basic building block for user interface components. A View occupies a rectangular area on the screen and is responsible for drawing and event handling. View is the base class for widgets, which are used to create interactive UI components (buttons, text fields, etc.). The ViewGroup subclass is the base class for layouts, which are invisible containers that hold other Views (or other ViewGroups) and define their layout properties. All of the views in a window are arranged in a single tree. You can add views either from code or by specifying a tree of views in one or more XML layout files. There are many specialized subclasses of views that act as controls or are capable of displaying text, images, or other content.
+
+Once you have created a tree of views, there are typically a few types of common operations you may wish to perform:
+
+Set properties: for example setting the text of a TextView. The available properties and the methods that set them will vary among the different subclasses of views. Note that properties that are known at build time can be set in the XML layout files.
+Set focus: The framework will handled moving focus in response to user input. To force focus to a specific view, call requestFocus().
+Set up listeners: Views allow clients to set listeners that will be notified when something interesting happens to the view. For example, all views will let you set a listener to be notified when the view gains or loses focus. You can register such a listener using setOnFocusChangeListener(android.view.View.OnFocusChangeListener). Other view subclasses offer more specialized listeners. For example, a Button exposes a listener to notify clients when the button is clicked.
+Set visibility: You can hide or show views using setVisibility(int).
+Note: The Android framework is responsible for measuring, laying out and drawing views. You should not call methods that perform these actions on views yourself unless you are actually implementing a ViewGroup."/>
+
+</RelativeLayout>
