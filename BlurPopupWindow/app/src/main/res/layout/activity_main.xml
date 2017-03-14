@@ -24,6 +24,15 @@
 		android:layout_marginTop="70dp"
 		android:text="Show Popup"/>
 
+	<Button
+		android:id="@+id/button2"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="70dp"
+		android:layout_toRightOf="@id/button"
+		android:text="Demo 2"/>
+
+
 	<TextView
 		android:id="@+id/text"
 		android:layout_width="match_parent"

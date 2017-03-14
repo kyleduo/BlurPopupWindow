@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content"
+			  android:gravity="center_horizontal"
+			  android:orientation="vertical">
+
+	<TextView
+		style="@style/FullMenuText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="BlurPopupWindow?"
+		android:textSize="32sp"
+		android:textStyle="bold"
+		/>
+
+	<TextView
+		style="@style/FullMenuText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="40dp"
+		android:text="It's Ok"/>
+
+	<TextView
+		style="@style/FullMenuText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dp"
+		android:text="Wonderful"/>
+
+</LinearLayout>
