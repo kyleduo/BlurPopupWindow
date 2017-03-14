@@ -18,8 +18,7 @@ public class MainActivity extends AppCompatActivity {
 		findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				IOSMenu menu = new IOSMenu(MainActivity.this);
-				menu.show();
+				IOSMenu.builder(MainActivity.this).build().show();
 			}
 		});
 	}

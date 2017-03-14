@@ -67,4 +67,19 @@ public class IOSMenu extends BlurPopupWindow {
 		super.onBlurredImageGot(bitmap);
 		ObjectAnimator.ofFloat(mBlurView, "alpha", 0, 1.f).setDuration(getAnimatingDuration()).start();
 	}
+
+	public static Builder builder(Context context) {
+		return new Builder(context);
+	}
+
+	public static class Builder extends BlurPopupWindow.Builder<IOSMenu> {
+		public Builder(Context context) {
+			super(context);
+		}
+
+		@Override
+		protected BlurPopupWindow createPopupWindow() {
+			return new IOSMenu(mContext);
+		}
+	}
 }

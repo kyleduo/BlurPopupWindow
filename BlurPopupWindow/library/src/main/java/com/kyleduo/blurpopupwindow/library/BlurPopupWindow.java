@@ -256,6 +256,42 @@ public class BlurPopupWindow extends FrameLayout {
 		mAnimatingDuration = animatingDuration;
 	}
 
+	public static Builder builder(Context context) {
+		return new Builder(context);
+	}
+
+	public static class Builder<T extends BlurPopupWindow> {
+		protected Context mContext;
+		protected View mContentView;
+
+		public Builder(Context context) {
+			mContext = context;
+		}
+
+		public Builder contentView(View contentView) {
+			mContentView = contentView;
+			return this;
+		}
+
+		public Builder tintColor(int tintColor) {
+			return this;
+		}
+
+		protected BlurPopupWindow createPopupWindow() {
+			return new BlurPopupWindow(mContext);
+		}
+
+		public T build() {
+			BlurPopupWindow popupWindow = createPopupWindow();
+			if (mContentView != null) {
+				popupWindow.setContentView(mContentView);
+			}
+			//noinspection unchecked
+			return (T) popupWindow;
+		}
+
+	}
+
 	private final static class BlurTask extends AsyncTask<Void, Void, Bitmap> {
 
 		private WeakReference<Context> mContextRef;
