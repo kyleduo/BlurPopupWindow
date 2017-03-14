@@ -131,7 +131,6 @@ public class BlurPopupWindow extends FrameLayout {
 		if (mAnimating) {
 			return;
 		}
-		ViewGroup.LayoutParams layoutParams = mActivity.getWindow().getDecorView().getLayoutParams();
 		new BlurTask(mActivity.getWindow().getDecorView(), this, new BlurTask.BlurTaskCallback() {
 			@Override
 			public void onBlurFinish(Bitmap bitmap) {
@@ -226,7 +225,7 @@ public class BlurPopupWindow extends FrameLayout {
 
 	protected ObjectAnimator createOnShowAnimator() {
 		setAlpha(0);
-		return ObjectAnimator.ofFloat(this, "alpha", getAlpha(), 1).setDuration(mAnimatingDuration);
+		return ObjectAnimator.ofFloat(this, "alpha", getAlpha(), 1.f).setDuration(mAnimatingDuration);
 	}
 
 	protected ObjectAnimator createOnDismissAnimator() {
