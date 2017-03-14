@@ -32,12 +32,17 @@ import static android.graphics.Bitmap.createBitmap;
 public class BlurPopupWindow extends FrameLayout {
 	private static final String TAG = "BlurPopupWindow";
 
+	private static final float DEFAULT_BLUR_RADIUS = 10;
+	private static final float DEFAULT_SACLE_RATIO = 0.4f;
+
 	private Activity mActivity;
 	private View mContentView;
 	private ImageView mBlurView;
 	private boolean mAnimating;
 	private int mTintColor;
 	private View mAnchorView;
+	private float mBlurRadius;
+	private float mScaleRatio;
 
 	public BlurPopupWindow(@NonNull Context context) {
 		super(context);
@@ -49,6 +54,9 @@ public class BlurPopupWindow extends FrameLayout {
 			throw new IllegalArgumentException("Context must be Activity");
 		}
 		mActivity = (Activity) getContext();
+
+		mBlurRadius = DEFAULT_BLUR_RADIUS;
+		mScaleRatio = DEFAULT_SACLE_RATIO;
 
 		setFocusable(true);
 		setFocusableInTouchMode(true);
@@ -217,6 +225,22 @@ public class BlurPopupWindow extends FrameLayout {
 		mAnchorView = anchorView;
 	}
 
+	public float getBlurRadius() {
+		return mBlurRadius;
+	}
+
+	public void setBlurRadius(float blurRadius) {
+		mBlurRadius = blurRadius;
+	}
+
+	public float getScaleRatio() {
+		return mScaleRatio;
+	}
+
+	public void setScaleRatio(float scaleRatio) {
+		mScaleRatio = scaleRatio;
+	}
+
 	private final static class BlurTask extends AsyncTask<Void, Void, Bitmap> {
 
 		private WeakReference<Context> mContextRef;
@@ -248,13 +272,15 @@ public class BlurPopupWindow extends FrameLayout {
 		@Override
 		protected Bitmap doInBackground(Void... params) {
 			Context context = mContextRef.get();
-			if (context == null) {
+			BlurPopupWindow popupWindow = mPopupWindowRef.get();
+			if (context == null || popupWindow == null) {
 				return null;
 			}
-			Bitmap scaledBitmap = Bitmap.createScaledBitmap(mSourceBitmap, mSourceBitmap.getWidth() / 6, mSourceBitmap.getHeight() / 6, false);
-			Bitmap blurred = BlurUtils.blur(context, scaledBitmap, 10);
-			Bitmap output = Bitmap.createScaledBitmap(blurred, mSourceBitmap.getWidth(), mSourceBitmap.getHeight(), true);
-			return output;
+			@SuppressWarnings("WrongThread") float scaleRatio = popupWindow.getScaleRatio();
+			Bitmap scaledBitmap = Bitmap.createScaledBitmap(mSourceBitmap, (int) (mSourceBitmap.getWidth() * scaleRatio), (int) (mSourceBitmap.getHeight() * scaleRatio), false);
+			@SuppressWarnings("WrongThread") float radius = popupWindow.getBlurRadius();
+			Bitmap blurred = BlurUtils.blur(context, scaledBitmap, radius);
+			return Bitmap.createScaledBitmap(blurred, mSourceBitmap.getWidth(), mSourceBitmap.getHeight(), true);
 		}
 
 		@Override
@@ -269,9 +295,6 @@ public class BlurPopupWindow extends FrameLayout {
 				canvas.translate(location[0], location[1]);
 				popupWindow.getAnchorView().draw(canvas);
 				canvas.restore();
-//				Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//				paint.setColor(Color.RED);
-//				canvas.drawRect(new RectF(10, 30, 30, 60), paint);
 			}
 			if (mBlurTaskCallback != null) {
 				mBlurTaskCallback.onBlurFinish(bitmap);

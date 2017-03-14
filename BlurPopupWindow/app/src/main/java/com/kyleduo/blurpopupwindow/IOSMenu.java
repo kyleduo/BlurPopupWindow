@@ -3,7 +3,6 @@ package com.kyleduo.blurpopupwindow;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +20,8 @@ public class IOSMenu extends BlurPopupWindow {
 
 	public IOSMenu(@NonNull Context context) {
 		super(context);
+
+		setTintColor(0x20ffffff);
 	}
 
 	@Override
@@ -36,7 +37,6 @@ public class IOSMenu extends BlurPopupWindow {
 	@Override
 	protected void onShow() {
 		super.onShow();
-		Log.d(TAG, "height: " + getContentView().getMeasuredHeight());
 		getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
 			public void onGlobalLayout() {

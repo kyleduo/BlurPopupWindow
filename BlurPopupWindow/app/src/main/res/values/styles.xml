@@ -10,9 +10,11 @@
 
 	<style name="IOSMenuText">
 		<item name="android:gravity">center</item>
-		<item name="android:textColor">#80333333</item>
+		<item name="android:textColor">#A0333333</item>
 		<item name="android:textSize">14sp</item>
 		<item name="android:minHeight">44dp</item>
+		<item name="android:clickable">true</item>
+		<item name="android:background">@drawable/menu_item_bg_selector</item>
 	</style>
 
 </resources>
