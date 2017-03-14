@@ -73,12 +73,13 @@ public class IOSMenu extends BlurPopupWindow {
 	}
 
 	public static class Builder extends BlurPopupWindow.Builder<IOSMenu> {
-		public Builder(Context context) {
+		private Builder(Context context) {
 			super(context);
+			this.translucentStatus();
 		}
 
 		@Override
-		protected BlurPopupWindow createPopupWindow() {
+		protected IOSMenu createPopupWindow() {
 			return new IOSMenu(mContext);
 		}
 	}

@@ -11,7 +11,9 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,14 +39,19 @@ public class BlurPopupWindow extends FrameLayout {
 	private static final long DEFAULT_ANIMATING_DURATION = 300;
 
 	private Activity mActivity;
-	private View mContentView;
 	protected ImageView mBlurView;
 	private boolean mAnimating;
+
+	private View mContentView;
 	private int mTintColor;
 	private View mAnchorView;
 	private float mBlurRadius;
 	private float mScaleRatio;
 	private long mAnimatingDuration;
+	private boolean mTranslucentStatus;
+	private boolean mTranslucentNavigation;
+	private boolean mDismissOnTouchBackground;
+	private boolean mDismissOnClickBack;
 
 	public BlurPopupWindow(@NonNull Context context) {
 		super(context);
@@ -81,7 +88,7 @@ public class BlurPopupWindow extends FrameLayout {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (mAnimating) {
+		if (mAnimating || !mDismissOnTouchBackground) {
 			return super.onTouchEvent(event);
 		}
 		if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -92,7 +99,7 @@ public class BlurPopupWindow extends FrameLayout {
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (mAnimating) {
+		if (mAnimating || !mDismissOnClickBack) {
 			return super.onKeyUp(keyCode, event);
 		}
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -138,7 +145,12 @@ public class BlurPopupWindow extends FrameLayout {
 		params.format = PixelFormat.RGBA_8888;
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			params.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+			if (mTranslucentStatus) {
+				params.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+			}
+			if (mTranslucentNavigation) {
+				params.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+			}
 		}
 		WindowManager windowManager = (WindowManager) mActivity.getSystemService(Context.WINDOW_SERVICE);
 		windowManager.addView(BlurPopupWindow.this, params);
@@ -186,9 +198,14 @@ public class BlurPopupWindow extends FrameLayout {
 				}
 
 				private void removeSelf() {
-					WindowManager windowManager = (WindowManager) mActivity.getSystemService(Context.WINDOW_SERVICE);
-					windowManager.removeView(BlurPopupWindow.this);
-					mAnimating = false;
+					try {
+						WindowManager windowManager = (WindowManager) mActivity.getSystemService(Context.WINDOW_SERVICE);
+						windowManager.removeView(BlurPopupWindow.this);
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						mAnimating = false;
+					}
 				}
 			});
 			animator.start();
@@ -232,6 +249,7 @@ public class BlurPopupWindow extends FrameLayout {
 		mAnchorView = anchorView;
 	}
 
+	@AnyThread
 	public float getBlurRadius() {
 		return mBlurRadius;
 	}
@@ -240,6 +258,7 @@ public class BlurPopupWindow extends FrameLayout {
 		mBlurRadius = blurRadius;
 	}
 
+	@AnyThread
 	public float getScaleRatio() {
 		return mScaleRatio;
 	}
@@ -256,16 +275,61 @@ public class BlurPopupWindow extends FrameLayout {
 		mAnimatingDuration = animatingDuration;
 	}
 
+	public boolean isTranslucentStatus() {
+		return mTranslucentStatus;
+	}
+
+	public void setTranslucentStatus(boolean translucentStatus) {
+		mTranslucentStatus = translucentStatus;
+	}
+
+	public boolean isTranslucentNavigation() {
+		return mTranslucentNavigation;
+	}
+
+	public void setTranslucentNavigation(boolean translucentNavigation) {
+		mTranslucentNavigation = translucentNavigation;
+	}
+
+	public boolean isDismissOnTouchBackground() {
+		return mDismissOnTouchBackground;
+	}
+
+	public void setDismissOnTouchBackground(boolean dismissOnTouchBackground) {
+		mDismissOnTouchBackground = dismissOnTouchBackground;
+	}
+
+	public boolean isDismissOnClickBack() {
+		return mDismissOnClickBack;
+	}
+
+	public void setDismissOnClickBack(boolean dismissOnClickBack) {
+		mDismissOnClickBack = dismissOnClickBack;
+	}
+
 	public static Builder builder(Context context) {
 		return new Builder(context);
 	}
 
 	public static class Builder<T extends BlurPopupWindow> {
+		private static final String TAG = "BlurPopupWindow.Builder";
 		protected Context mContext;
-		protected View mContentView;
+		private View mContentView;
+		private int mTintColor;
+		private float mBlurRadius;
+		private float mScaleRatio;
+		private long mAnimatingDuration;
+		private boolean mTranslucentStatus;
+		private boolean mTranslucentNavigation;
+		private boolean mDismissOnTouchBackground = true;
+		private boolean mDismissOnClickBack = true;
 
-		public Builder(Context context) {
+		protected Builder(Context context) {
 			mContext = context;
+
+			mBlurRadius = BlurPopupWindow.DEFAULT_BLUR_RADIUS;
+			mScaleRatio = BlurPopupWindow.DEFAULT_SCALE_RATIO;
+			mAnimatingDuration = BlurPopupWindow.DEFAULT_ANIMATING_DURATION;
 		}
 
 		public Builder contentView(View contentView) {
@@ -274,22 +338,77 @@ public class BlurPopupWindow extends FrameLayout {
 		}
 
 		public Builder tintColor(int tintColor) {
+			mTintColor = tintColor;
 			return this;
 		}
 
-		protected BlurPopupWindow createPopupWindow() {
-			return new BlurPopupWindow(mContext);
+		public Builder translucentStatus() {
+			mTranslucentStatus = true;
+			return this;
+		}
+
+		public Builder translucentNavigation() {
+			mTranslucentNavigation = true;
+			return this;
+		}
+
+		public Builder scaleRatio(float scaleRatio) {
+			if (scaleRatio <= 0 || scaleRatio > 1) {
+				Log.w(TAG, "scaleRatio invalid: " + scaleRatio + ". It can only be (0, 1]");
+				return this;
+			}
+			mScaleRatio = scaleRatio;
+			return this;
+		}
+
+		public Builder blurRadius(float blurRadius) {
+			if (blurRadius < 0 || blurRadius > 25) {
+				Log.w(TAG, "blurRadius invalid: " + blurRadius + ". It can only be [0, 25]");
+				return this;
+			}
+			mBlurRadius = blurRadius;
+			return this;
+		}
+
+		public Builder animatingDuration(long animatingDuration) {
+			if (animatingDuration < 0) {
+				Log.w(TAG, "animatingDuration invalid: " + animatingDuration + ". It can only be (0, ..)");
+				return this;
+			}
+			mAnimatingDuration = animatingDuration;
+			return this;
+		}
+
+		public Builder dismissOnTouchBackground(boolean dismissOnTouchBackground) {
+			mDismissOnTouchBackground = dismissOnTouchBackground;
+			return this;
+		}
+
+		public Builder dismissOnClickBack(boolean dismissOnClickBack) {
+			mDismissOnClickBack = dismissOnClickBack;
+			return this;
+		}
+
+		protected T createPopupWindow() {
+			//noinspection unchecked
+			return (T) new BlurPopupWindow(mContext);
 		}
 
 		public T build() {
-			BlurPopupWindow popupWindow = createPopupWindow();
+			T popupWindow = createPopupWindow();
 			if (mContentView != null) {
 				popupWindow.setContentView(mContentView);
 			}
-			//noinspection unchecked
-			return (T) popupWindow;
+			popupWindow.setTintColor(mTintColor);
+			popupWindow.setAnimatingDuration(mAnimatingDuration);
+			popupWindow.setBlurRadius(mBlurRadius);
+			popupWindow.setScaleRatio(mScaleRatio);
+			popupWindow.setTranslucentStatus(mTranslucentStatus);
+			popupWindow.setTranslucentNavigation(mTranslucentNavigation);
+			popupWindow.setDismissOnTouchBackground(mDismissOnTouchBackground);
+			popupWindow.setDismissOnClickBack(mDismissOnClickBack);
+			return popupWindow;
 		}
-
 	}
 
 	private final static class BlurTask extends AsyncTask<Void, Void, Bitmap> {
@@ -327,9 +446,9 @@ public class BlurPopupWindow extends FrameLayout {
 			if (context == null || popupWindow == null) {
 				return null;
 			}
-			@SuppressWarnings("WrongThread") float scaleRatio = popupWindow.getScaleRatio();
+			float scaleRatio = popupWindow.getScaleRatio();
 			Bitmap scaledBitmap = Bitmap.createScaledBitmap(mSourceBitmap, (int) (mSourceBitmap.getWidth() * scaleRatio), (int) (mSourceBitmap.getHeight() * scaleRatio), false);
-			@SuppressWarnings("WrongThread") float radius = popupWindow.getBlurRadius();
+			float radius = popupWindow.getBlurRadius();
 			Bitmap blurred = BlurUtils.blur(context, scaledBitmap, radius);
 			return Bitmap.createScaledBitmap(blurred, mSourceBitmap.getWidth(), mSourceBitmap.getHeight(), true);
 		}
