@@ -28,8 +28,6 @@ import android.widget.ImageView;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 
-import static android.graphics.Bitmap.createBitmap;
-
 /**
  * PopupWindow with blurred below view.
  * Created by kyle on 2017/3/14.
@@ -38,7 +36,7 @@ import static android.graphics.Bitmap.createBitmap;
 public class BlurPopupWindow extends FrameLayout {
 	private static final String TAG = "BlurPopupWindow";
 
-	private static final float DEFAULT_BLUR_RADIUS = 2;
+	private static final float DEFAULT_BLUR_RADIUS = 10;
 	private static final float DEFAULT_SCALE_RATIO = 0.4f;
 	private static final long DEFAULT_ANIMATING_DURATION = 300;
 
@@ -450,7 +448,7 @@ public class BlurPopupWindow extends FrameLayout {
 			int height = sourceView.getHeight() - statusBarHeight - navigationBarheight;
 
 			Drawable background = sourceView.getBackground();
-			mSourceBitmap = createBitmap(sourceView.getWidth(), height, Bitmap.Config.ARGB_8888);
+			mSourceBitmap = Bitmap.createBitmap(sourceView.getWidth(), height, Bitmap.Config.ARGB_8888);
 			Canvas canvas = new Canvas(mSourceBitmap);
 			int saveCount = 0;
 			if (statusBarHeight != 0) {
@@ -477,6 +475,9 @@ public class BlurPopupWindow extends FrameLayout {
 				return null;
 			}
 			float scaleRatio = popupWindow.getScaleRatio();
+			if (popupWindow.getBlurRadius() == 0) {
+				return mSourceBitmap;
+			}
 			Bitmap scaledBitmap = Bitmap.createScaledBitmap(mSourceBitmap, (int) (mSourceBitmap.getWidth() * scaleRatio), (int) (mSourceBitmap.getHeight() * scaleRatio), false);
 			float radius = popupWindow.getBlurRadius();
 			Bitmap blurred = BlurUtils.blur(context, scaledBitmap, radius);

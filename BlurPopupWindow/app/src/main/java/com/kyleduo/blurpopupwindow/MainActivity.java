@@ -32,5 +32,14 @@ public class MainActivity extends AppCompatActivity {
 						.show();
 			}
 		});
+
+		findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FullScreenMenu.builder(MainActivity.this).blurRadius(0)
+						.build()
+						.show();
+			}
+		});
 	}
 }

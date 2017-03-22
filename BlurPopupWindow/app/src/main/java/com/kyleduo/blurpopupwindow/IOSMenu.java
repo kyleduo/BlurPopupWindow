@@ -21,8 +21,6 @@ public class IOSMenu extends BlurPopupWindow {
 
 	public IOSMenu(@NonNull Context context) {
 		super(context);
-
-		setTintColor(0x20000000);
 	}
 
 	@Override
@@ -75,7 +73,7 @@ public class IOSMenu extends BlurPopupWindow {
 	public static class Builder extends BlurPopupWindow.Builder<IOSMenu> {
 		private Builder(Context context) {
 			super(context);
-			this.scaleRatio(0.25f).blurRadius(10);
+			this.scaleRatio(0.2f).blurRadius(8).tintColor(0x20000000);
 		}
 
 		@Override
