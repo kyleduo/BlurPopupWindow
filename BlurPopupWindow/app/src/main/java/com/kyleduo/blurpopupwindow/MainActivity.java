@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				IOSMenu.builder(MainActivity.this)
-						.translucentStatus()
 						.build()
 						.show();
 			}
@@ -29,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				FullScreenMenu.builder(MainActivity.this)
-						.translucentStatus()
 						.build()
 						.show();
 			}

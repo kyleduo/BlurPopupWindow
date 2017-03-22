@@ -13,7 +13,10 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 
 import static android.graphics.Bitmap.createBitmap;
 
@@ -34,12 +38,13 @@ import static android.graphics.Bitmap.createBitmap;
 public class BlurPopupWindow extends FrameLayout {
 	private static final String TAG = "BlurPopupWindow";
 
-	private static final float DEFAULT_BLUR_RADIUS = 10;
+	private static final float DEFAULT_BLUR_RADIUS = 2;
 	private static final float DEFAULT_SCALE_RATIO = 0.4f;
 	private static final long DEFAULT_ANIMATING_DURATION = 300;
 
 	private Activity mActivity;
 	protected ImageView mBlurView;
+	protected FrameLayout mContentLayout;
 	private boolean mAnimating;
 
 	private View mContentView;
@@ -48,8 +53,6 @@ public class BlurPopupWindow extends FrameLayout {
 	private float mBlurRadius;
 	private float mScaleRatio;
 	private long mAnimatingDuration;
-	private boolean mTranslucentStatus;
-	private boolean mTranslucentNavigation;
 	private boolean mDismissOnTouchBackground;
 	private boolean mDismissOnClickBack;
 
@@ -64,6 +67,10 @@ public class BlurPopupWindow extends FrameLayout {
 		}
 		mActivity = (Activity) getContext();
 
+		mContentLayout = new FrameLayout(getContext());
+		LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		addView(mContentLayout, lp);
+
 		mBlurRadius = DEFAULT_BLUR_RADIUS;
 		mScaleRatio = DEFAULT_SCALE_RATIO;
 		mAnimatingDuration = DEFAULT_ANIMATING_DURATION;
@@ -73,12 +80,14 @@ public class BlurPopupWindow extends FrameLayout {
 
 		mBlurView = new ImageView(mActivity);
 		mBlurView.setScaleType(ImageView.ScaleType.FIT_XY);
-		mBlurView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-		addView(mBlurView);
+		lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		lp.gravity = Gravity.BOTTOM;
+		mBlurView.setLayoutParams(lp);
+		mContentLayout.addView(mBlurView);
 
 		mContentView = createContentView();
 		if (mContentView != null) {
-			addView(mContentView);
+			mContentLayout.addView(mContentView);
 		}
 	}
 
@@ -131,26 +140,68 @@ public class BlurPopupWindow extends FrameLayout {
 		if (mAnimating) {
 			return;
 		}
-		new BlurTask(mActivity.getWindow().getDecorView(), this, new BlurTask.BlurTaskCallback() {
-			@Override
-			public void onBlurFinish(Bitmap bitmap) {
-				onBlurredImageGot(bitmap);
-			}
-		}).execute();
 
 		WindowManager.LayoutParams params = new WindowManager.LayoutParams();
 		params.width = WindowManager.LayoutParams.MATCH_PARENT;
 		params.height = WindowManager.LayoutParams.MATCH_PARENT;
 		params.format = PixelFormat.RGBA_8888;
 
+		int statusBarHeight = 0;
+		int navigationBarHeight = BlurPopupWindow.getNaviHeight(mActivity);
+		int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+		if (resourceId > 0) {
+			statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+		}
+
+		int trimTopHeight = statusBarHeight;
+		int trimBottomHeight = 0;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			if (mTranslucentStatus) {
-				params.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+
+			// No need to trim status bar height in SDK > 21.
+			trimTopHeight = 0;
+
+			WindowManager.LayoutParams lp = mActivity.getWindow().getAttributes();
+			if ((lp.flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				trimBottomHeight = navigationBarHeight;
 			}
-			if (mTranslucentNavigation) {
-				params.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+
+			// This line will cause decor view fill all the screen, even if FLAG_TRANSLUCENT_NAVIGATION
+			// was not set.
+			params.flags = lp.flags;
+
+			if (trimBottomHeight > 0) {
+
+				// If trimBottomHeight > 0, it means that we cut navigation bar off and we need shrink
+				// popup windows' content height by increase bottom padding.
+				setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), getPaddingBottom() + navigationBarHeight);
+			} else {
+
+				// If navigation is showing on the screen, whether translucent or not, we should move contentView
+				// on top of it.
+				boolean moveContent = false;
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+					moveContent = true;
+				} else if (navigationBarHeight > 0 && (lp.flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION) != 0) {
+					// Navigation feature diffs from v19 to v21.
+					moveContent = true;
+				}
+				if (navigationBarHeight > 0 && moveContent) {
+					if (mContentView != null) {
+						MarginLayoutParams layoutParams = (MarginLayoutParams) mContentView.getLayoutParams();
+						layoutParams.bottomMargin += navigationBarHeight;
+					}
+				}
 			}
 		}
+
+		new BlurTask(mActivity.getWindow().getDecorView(), trimTopHeight, trimBottomHeight, this, new BlurTask.BlurTaskCallback() {
+			@Override
+			public void onBlurFinish(Bitmap bitmap) {
+				onBlurredImageGot(bitmap);
+			}
+		}).execute();
+
+
 		WindowManager windowManager = (WindowManager) mActivity.getSystemService(Context.WINDOW_SERVICE);
 		windowManager.addView(BlurPopupWindow.this, params);
 		onShow();
@@ -224,12 +275,12 @@ public class BlurPopupWindow extends FrameLayout {
 	}
 
 	protected ObjectAnimator createOnShowAnimator() {
-		setAlpha(0);
-		return ObjectAnimator.ofFloat(this, "alpha", getAlpha(), 1.f).setDuration(mAnimatingDuration);
+		mContentLayout.setAlpha(0);
+		return ObjectAnimator.ofFloat(mContentLayout, "alpha", mContentLayout.getAlpha(), 1.f).setDuration(mAnimatingDuration);
 	}
 
 	protected ObjectAnimator createOnDismissAnimator() {
-		return ObjectAnimator.ofFloat(this, "alpha", getAlpha(), 0).setDuration(mAnimatingDuration);
+		return ObjectAnimator.ofFloat(mContentLayout, "alpha", mContentLayout.getAlpha(), 0).setDuration(mAnimatingDuration);
 	}
 
 	public int getTintColor() {
@@ -274,22 +325,6 @@ public class BlurPopupWindow extends FrameLayout {
 		mAnimatingDuration = animatingDuration;
 	}
 
-	public boolean isTranslucentStatus() {
-		return mTranslucentStatus;
-	}
-
-	public void setTranslucentStatus(boolean translucentStatus) {
-		mTranslucentStatus = translucentStatus;
-	}
-
-	public boolean isTranslucentNavigation() {
-		return mTranslucentNavigation;
-	}
-
-	public void setTranslucentNavigation(boolean translucentNavigation) {
-		mTranslucentNavigation = translucentNavigation;
-	}
-
 	public boolean isDismissOnTouchBackground() {
 		return mDismissOnTouchBackground;
 	}
@@ -318,8 +353,6 @@ public class BlurPopupWindow extends FrameLayout {
 		private float mBlurRadius;
 		private float mScaleRatio;
 		private long mAnimatingDuration;
-		private boolean mTranslucentStatus;
-		private boolean mTranslucentNavigation;
 		private boolean mDismissOnTouchBackground = true;
 		private boolean mDismissOnClickBack = true;
 
@@ -338,16 +371,6 @@ public class BlurPopupWindow extends FrameLayout {
 
 		public Builder tintColor(int tintColor) {
 			mTintColor = tintColor;
-			return this;
-		}
-
-		public Builder translucentStatus() {
-			mTranslucentStatus = true;
-			return this;
-		}
-
-		public Builder translucentNavigation() {
-			mTranslucentNavigation = true;
 			return this;
 		}
 
@@ -402,8 +425,6 @@ public class BlurPopupWindow extends FrameLayout {
 			popupWindow.setAnimatingDuration(mAnimatingDuration);
 			popupWindow.setBlurRadius(mBlurRadius);
 			popupWindow.setScaleRatio(mScaleRatio);
-			popupWindow.setTranslucentStatus(mTranslucentStatus);
-			popupWindow.setTranslucentNavigation(mTranslucentNavigation);
 			popupWindow.setDismissOnTouchBackground(mDismissOnTouchBackground);
 			popupWindow.setDismissOnClickBack(mDismissOnClickBack);
 			return popupWindow;
@@ -421,20 +442,30 @@ public class BlurPopupWindow extends FrameLayout {
 			void onBlurFinish(Bitmap bitmap);
 		}
 
-		BlurTask(View sourceView, BlurPopupWindow popupWindow, BlurTaskCallback blurTaskCallback) {
+		BlurTask(View sourceView, int statusBarHeight, int navigationBarheight, BlurPopupWindow popupWindow, BlurTaskCallback blurTaskCallback) {
 			mContextRef = new WeakReference<>(sourceView.getContext());
 			mPopupWindowRef = new WeakReference<>(popupWindow);
 			mBlurTaskCallback = blurTaskCallback;
 
+			int height = sourceView.getHeight() - statusBarHeight - navigationBarheight;
+
 			Drawable background = sourceView.getBackground();
-			mSourceBitmap = createBitmap(sourceView.getWidth(), sourceView.getHeight(), Bitmap.Config.ARGB_8888);
+			mSourceBitmap = createBitmap(sourceView.getWidth(), height, Bitmap.Config.ARGB_8888);
 			Canvas canvas = new Canvas(mSourceBitmap);
+			int saveCount = 0;
+			if (statusBarHeight != 0) {
+				saveCount = canvas.save();
+				canvas.translate(0, -statusBarHeight);
+			}
 			if (background == null) {
 				canvas.drawColor(0xffffffff);
 			}
 			sourceView.draw(canvas);
 			if (popupWindow.getTintColor() != 0) {
 				canvas.drawColor(popupWindow.getTintColor());
+			}
+			if (statusBarHeight != 0 && saveCount != 0) {
+				canvas.restoreToCount(saveCount);
 			}
 		}
 
@@ -469,6 +500,28 @@ public class BlurPopupWindow extends FrameLayout {
 				mBlurTaskCallback.onBlurFinish(bitmap);
 			}
 		}
+	}
+
+	private static int getNaviHeight(Activity activity) {
+		if (activity == null) {
+			return 0;
+		}
+		Display display = activity.getWindowManager().getDefaultDisplay();
+		int contentHeight = activity.getResources().getDisplayMetrics().heightPixels;
+		int realHeight = 0;
+		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			final DisplayMetrics metrics = new DisplayMetrics();
+			display.getRealMetrics(metrics);
+			realHeight = metrics.heightPixels;
+		} else {
+			try {
+				Method mGetRawH = Display.class.getMethod("getRawHeight");
+				realHeight = (Integer) mGetRawH.invoke(display);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return realHeight - contentHeight;
 	}
 
 }
