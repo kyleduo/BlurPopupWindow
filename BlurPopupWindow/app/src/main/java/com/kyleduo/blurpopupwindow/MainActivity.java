@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 		findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FullScreenMenu.builder(MainActivity.this).blurRadius(0)
+				FullScreenMenu.builder(MainActivity.this).setBlurRadius(0)
 						.build()
 						.show();
 			}

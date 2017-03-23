@@ -34,7 +34,7 @@ public class FullScreenMenu extends BlurPopupWindow {
 	public static class Builder extends BlurPopupWindow.Builder<FullScreenMenu> {
 		protected Builder(Context context) {
 			super(context);
-			this.tintColor(0x60000000).scaleRatio(0.3f);
+			this.setTintColor(0x60000000).setScaleRatio(0.3f);
 		}
 
 		@Override

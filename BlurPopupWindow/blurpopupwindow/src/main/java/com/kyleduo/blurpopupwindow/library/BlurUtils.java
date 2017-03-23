@@ -31,7 +31,6 @@ public class BlurUtils {
 
 		ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rs, allIn.getElement());
 
-
 		blur.setRadius(radius);
 		blur.setInput(allIn);
 		blur.forEach(allOut);
