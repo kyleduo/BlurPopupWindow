@@ -140,6 +140,9 @@ public class BlurPopupWindow extends FrameLayout {
 	}
 
 	public void show() {
+		if (mActivity.isInMultiWindowMode()) {
+			return;
+		}
 		if (mAnimating) {
 			return;
 		}
@@ -464,6 +467,9 @@ public class BlurPopupWindow extends FrameLayout {
 			mBlurTaskCallback = blurTaskCallback;
 
 			int height = sourceView.getHeight() - statusBarHeight - navigationBarheight;
+			if (height < 0) {
+				height = sourceView.getHeight();
+			}
 
 			Drawable background = sourceView.getBackground();
 			mSourceBitmap = Bitmap.createBitmap(sourceView.getWidth(), height, Bitmap.Config.ARGB_8888);
