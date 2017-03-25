@@ -96,6 +96,7 @@ public class BlurPopupWindow extends FrameLayout {
 
 	/**
 	 * Override this to create custom content.
+	 *
 	 * @param parent the parent where content view would be.
 	 * @return
 	 */
@@ -145,9 +146,6 @@ public class BlurPopupWindow extends FrameLayout {
 	}
 
 	public void show() {
-		if (mActivity.isInMultiWindowMode()) {
-			return;
-		}
 		if (mAnimating) {
 			return;
 		}
@@ -377,6 +375,26 @@ public class BlurPopupWindow extends FrameLayout {
 		public Builder setContentView(int resId) {
 			View view = LayoutInflater.from(mContext).inflate(resId, new FrameLayout(mContext), false);
 			mContentView = view;
+			return this;
+		}
+
+		public Builder bindContentViewClickListener(View.OnClickListener listener) {
+			if (mContentView != null) {
+				mContentView.setClickable(true);
+				mContentView.setOnClickListener(listener);
+			}
+			return this;
+		}
+
+		public Builder bindClickListener(View.OnClickListener listener, int... views) {
+			if (mContentView != null) {
+				for (int viewId : views) {
+					View view = mContentView.findViewById(viewId);
+					if (view != null) {
+						view.setOnClickListener(listener);
+					}
+				}
+			}
 			return this;
 		}
 

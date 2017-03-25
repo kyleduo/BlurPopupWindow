@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
 
@@ -66,10 +67,15 @@ public class MainActivity extends AppCompatActivity {
 						case 2:
 							new BlurPopupWindow.Builder(v.getContext())
 									.setContentView(R.layout.layout_dialog_like)
+									.bindClickListener(new View.OnClickListener() {
+										@Override
+										public void onClick(View v) {
+											Toast.makeText(v.getContext(), "Click Button", Toast.LENGTH_SHORT).show();
+										}
+									}, R.id.dialog_like_bt)
 									.setGravity(Gravity.CENTER)
 									.setScaleRatio(0.2f)
 									.setBlurRadius(10)
-									.setAnimationDuration(300)
 									.setTintColor(0x30000000)
 									.build()
 									.show();

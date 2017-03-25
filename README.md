@@ -20,7 +20,7 @@
 
 ```groovy
 dependencies {
-    compile 'com.kyleduo.blurpopupwindow:blurpopupwindow:1.0.3'
+    compile 'com.kyleduo.blurpopupwindow:blurpopupwindow:1.0.4'
 }
 ```
 
@@ -31,16 +31,23 @@ dependencies {
 A typically usage would be like this:
 
 ```java
-new BlurPopupWindow.Builder(activity)
-      .setContentView(R.layout.layout_dialog_like)
-      .setGravity(Gravity.CENTER)
-      .setScaleRatio(0.2f)
-      .setBlurRadius(10)
-      .build()
-      .show();
+new BlurPopupWindow.Builder(v.getContext())
+        .setContentView(R.layout.layout_dialog_like)
+        .bindClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(), "Click Button", Toast.LENGTH_SHORT).show();
+            }
+        }, R.id.dialog_like_bt)
+        .setGravity(Gravity.CENTER)
+        .setScaleRatio(0.2f)
+        .setBlurRadius(10)
+        .setTintColor(0x30000000)
+        .build()
+        .show();
 ```
 
-And this would display a dialog like popup window like**(1)**. The content display depends on you layout design.
+And this would display a dialog-like popup window like**(1)**. The content display depends on you layout design.
 
 The blur effect is not that necessay and you can disable it by setting the `blurRadius` to `0`. And you got**(2)**
 
@@ -64,6 +71,10 @@ builder
 .setTintColor(0x30000000)
 .setDismissOnClickBack(true)
 .setDismissOnTouchBackground(true)
+// bind click listener to id1, id2, ...
+.bindClickListener(listener, id1, id2, ...)
+// bind click listener to content view
+.bindContentViewClickListener(listener)
 ```
 
 
