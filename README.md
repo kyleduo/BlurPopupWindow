@@ -6,6 +6,16 @@
 
 ![dialog_like](preview/preview.jpg)
 
+
+
+### Features
+
+* Blur/Not blur background.
+* Support translucent status bar and translucent navigationbar.
+* Tint color.
+
+
+
 ### Use with Gradle
 
 ```groovy
@@ -13,6 +23,8 @@ dependencies {
     compile 'com.kyleduo.blurpopupwindow:blurpopupwindow:1.0.3'
 }
 ```
+
+
 
 ### Usage
 
@@ -34,6 +46,8 @@ The blur effect is not that necessay and you can disable it by setting the `blur
 
 Or you can tune the blur effect to what you want, like **(3)**.
 
+
+
 ### Builder
 
 The Builder class has some methods for change the behavior. Most of them are easy to understand by their name.
@@ -51,6 +65,8 @@ builder
 .setDismissOnClickBack(true)
 .setDismissOnTouchBackground(true)
 ```
+
+
 
 ### Customize
 
