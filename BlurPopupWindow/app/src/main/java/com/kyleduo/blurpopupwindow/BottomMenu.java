@@ -15,16 +15,16 @@ import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
  * Created by kyle on 2017/3/14.
  */
 
-public class IOSMenu extends BlurPopupWindow {
+public class BottomMenu extends BlurPopupWindow {
 	private static final String TAG = "IOSMenu";
 
-	public IOSMenu(@NonNull Context context) {
+	public BottomMenu(@NonNull Context context) {
 		super(context);
 	}
 
 	@Override
 	protected View createContentView() {
-		View menu = LayoutInflater.from(getContext()).inflate(R.layout.layout_ios, this, false);
+		View menu = LayoutInflater.from(getContext()).inflate(R.layout.layout_bottom_menu, this, false);
 		LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 		lp.gravity = Gravity.BOTTOM;
 		menu.setLayoutParams(lp);
@@ -66,19 +66,15 @@ public class IOSMenu extends BlurPopupWindow {
 		return null;
 	}
 
-	public static Builder builder(Context context) {
-		return new Builder(context);
-	}
-
-	public static class Builder extends BlurPopupWindow.Builder<IOSMenu> {
-		private Builder(Context context) {
+	public static class Builder extends BlurPopupWindow.Builder<BottomMenu> {
+		public Builder(Context context) {
 			super(context);
-			this.setScaleRatio(0.25f).setBlurRadius(8).setTintColor(0x30FFFFFF);
+			this.setScaleRatio(0.25f).setBlurRadius(8).setTintColor(0x30000000);
 		}
 
 		@Override
-		protected IOSMenu createPopupWindow() {
-			return new IOSMenu(mContext);
+		protected BottomMenu createPopupWindow() {
+			return new BottomMenu(mContext);
 		}
 	}
 }

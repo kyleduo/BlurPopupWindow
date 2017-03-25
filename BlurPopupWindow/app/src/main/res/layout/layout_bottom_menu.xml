@@ -7,7 +7,7 @@
 			  android:orientation="vertical">
 
 	<TextView
-		style="@style/IOSMenuText"
+		style="@style/BottomMenuText"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:text="Confirm"
@@ -20,7 +20,7 @@
 		/>
 
 	<TextView
-		style="@style/IOSMenuText"
+		style="@style/BottomMenuText"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:text="Delete"
@@ -35,7 +35,7 @@
 
 	<TextView
 		android:id="@+id/cancel_action"
-		style="@style/IOSMenuText"
+		style="@style/BottomMenuText"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:text="Cancel"

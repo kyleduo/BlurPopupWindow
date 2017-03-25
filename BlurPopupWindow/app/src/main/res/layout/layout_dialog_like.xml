@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.kyleduo.blurpopupwindow.ShadowContainer
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:clickable="true"
+	android:gravity="center_horizontal"
+	android:orientation="vertical"
+	android:paddingBottom="30dp"
+	android:paddingLeft="40dp"
+	android:paddingRight="40dp"
+	android:paddingTop="30dp"
+	app:sc_shadowColor="#40444444">
+
+
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:src="@drawable/doctor_app_shot"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dp"
+		android:text="You forgot to upload prescription?"
+		android:textColor="#333333"
+		android:textSize="14sp"
+		android:textStyle="bold"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		android:gravity="center_horizontal"
+		android:text="Editorial: The Trump Administration Clears Trump’s Washington Hotel."
+		android:textColor="#999999"
+		android:textSize="14sp"/>
+
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="24dp"
+		android:background="@drawable/dialog_button_bg"
+		android:gravity="center"
+		android:minHeight="40dp"
+		android:minWidth="120dp"
+		android:text="Upload"
+		android:textColor="@android:color/white"/>
+
+</com.kyleduo.blurpopupwindow.ShadowContainer>

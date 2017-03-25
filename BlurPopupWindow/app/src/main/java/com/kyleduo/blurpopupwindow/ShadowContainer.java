@@ -1,6 +1,7 @@
 package com.kyleduo.blurpopupwindow;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
@@ -50,6 +51,12 @@ public class ShadowContainer extends LinearLayout {
 
 		mShadowRadius = dp2px(DEFAULT_SHADOW_RADIUS_DP);
 		mShadowColor = 0xE0BFCDE6;
+
+		if (attrs != null) {
+			TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.ShadowContainer);
+			mShadowColor = ta.getColor(R.styleable.ShadowContainer_sc_shadowColor, mShadowColor);
+			ta.recycle();
+		}
 
 		mShadowDrawable = new ShadowDrawable(mDensity);
 		mShadowDrawable.setShadow(mShadowRadius, mShadowColor);

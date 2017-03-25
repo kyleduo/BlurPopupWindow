@@ -58,12 +58,8 @@ public class SharePopup extends BlurPopupWindow {
 		return null;
 	}
 
-	public static Builder builder(Context context) {
-		return new Builder(context);
-	}
-
 	public static class Builder extends BlurPopupWindow.Builder<SharePopup> {
-		private Builder(Context context) {
+		public Builder(Context context) {
 			super(context);
 			this.setScaleRatio(0.25f).setBlurRadius(8).setTintColor(0x30000000);
 		}

@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,7 +132,7 @@ public class BlurPopupWindow extends FrameLayout {
 			mContentView = null;
 		}
 		mContentView = contentView;
-		addView(mContentView);
+		mContentLayout.addView(mContentView);
 	}
 
 	public View getContentView() {
@@ -340,10 +341,6 @@ public class BlurPopupWindow extends FrameLayout {
 		mDismissOnClickBack = dismissOnClickBack;
 	}
 
-	public static Builder builder(Context context) {
-		return new Builder(context);
-	}
-
 	public static class Builder<T extends BlurPopupWindow> {
 		private static final String TAG = "BlurPopupWindow.Builder";
 		protected Context mContext;
@@ -354,8 +351,9 @@ public class BlurPopupWindow extends FrameLayout {
 		private long mAnimationDuration;
 		private boolean mDismissOnTouchBackground = true;
 		private boolean mDismissOnClickBack = true;
+		private int mGravity = -1;
 
-		protected Builder(Context context) {
+		public Builder(Context context) {
 			mContext = context;
 
 			mBlurRadius = BlurPopupWindow.DEFAULT_BLUR_RADIUS;
@@ -365,6 +363,17 @@ public class BlurPopupWindow extends FrameLayout {
 
 		public Builder setContentView(View contentView) {
 			mContentView = contentView;
+			return this;
+		}
+
+		public Builder setContentView(int resId) {
+			View view = LayoutInflater.from(mContext).inflate(resId, new FrameLayout(mContext), false);
+			mContentView = view;
+			return this;
+		}
+
+		public Builder setGravity(int gravity) {
+			mGravity = gravity;
 			return this;
 		}
 
@@ -418,6 +427,14 @@ public class BlurPopupWindow extends FrameLayout {
 		public T build() {
 			T popupWindow = createPopupWindow();
 			if (mContentView != null) {
+				ViewGroup.LayoutParams layoutParams = mContentView.getLayoutParams();
+				if (layoutParams == null || !(layoutParams instanceof FrameLayout.LayoutParams)) {
+					layoutParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
+				}
+				if (mGravity != -1) {
+					((LayoutParams) layoutParams).gravity = mGravity;
+				}
+				mContentView.setLayoutParams(layoutParams);
 				popupWindow.setContentView(mContentView);
 			}
 			popupWindow.setTintColor(mTintColor);
