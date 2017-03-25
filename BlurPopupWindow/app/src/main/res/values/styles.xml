@@ -11,8 +11,8 @@
 	<style name="IOSMenuText">
 		<item name="android:gravity">center</item>
 		<item name="android:textColor">#80333333</item>
-		<item name="android:textSize">14sp</item>
-		<item name="android:minHeight">44dp</item>
+		<item name="android:textSize">15sp</item>
+		<item name="android:minHeight">50dp</item>
 		<item name="android:clickable">true</item>
 		<item name="android:background">@drawable/menu_item_bg_selector</item>
 	</style>
@@ -22,6 +22,13 @@
 		<item name="android:textSize">24sp</item>
 		<item name="android:minHeight">44dp</item>
 		<item name="android:clickable">true</item>
+	</style>
+
+	<style name="ShareIcon">
+		<item name="android:layout_height">50dp</item>
+		<item name="android:layout_width">0dp</item>
+		<item name="android:layout_weight">1</item>
+		<item name="android:scaleType">fitCenter</item>
 	</style>
 
 </resources>

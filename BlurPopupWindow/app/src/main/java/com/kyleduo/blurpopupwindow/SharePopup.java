@@ -12,31 +12,23 @@ import android.view.ViewTreeObserver;
 import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
 
 /**
- * Created by kyle on 2017/3/14.
+ * Created by kyle on 2017/3/25.
  */
 
-public class IOSMenu extends BlurPopupWindow {
-	private static final String TAG = "IOSMenu";
+public class SharePopup extends BlurPopupWindow {
 
-	public IOSMenu(@NonNull Context context) {
+	public SharePopup(@NonNull Context context) {
 		super(context);
 	}
 
 	@Override
 	protected View createContentView() {
-		View menu = LayoutInflater.from(getContext()).inflate(R.layout.layout_ios, this, false);
+		View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_bottom_popup, this, false);
 		LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 		lp.gravity = Gravity.BOTTOM;
-		menu.setLayoutParams(lp);
-		menu.setVisibility(INVISIBLE);
-
-		menu.findViewById(R.id.cancel_action).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dismiss();
-			}
-		});
-		return menu;
+		view.setLayoutParams(lp);
+		view.setVisibility(INVISIBLE);
+		return view;
 	}
 
 	@Override
@@ -70,15 +62,15 @@ public class IOSMenu extends BlurPopupWindow {
 		return new Builder(context);
 	}
 
-	public static class Builder extends BlurPopupWindow.Builder<IOSMenu> {
+	public static class Builder extends BlurPopupWindow.Builder<SharePopup> {
 		private Builder(Context context) {
 			super(context);
-			this.setScaleRatio(0.25f).setBlurRadius(8).setTintColor(0x30FFFFFF);
+			this.setScaleRatio(0.25f).setBlurRadius(8).setTintColor(0x30000000);
 		}
 
 		@Override
-		protected IOSMenu createPopupWindow() {
-			return new IOSMenu(mContext);
+		protected SharePopup createPopupWindow() {
+			return new SharePopup(mContext);
 		}
 	}
 }

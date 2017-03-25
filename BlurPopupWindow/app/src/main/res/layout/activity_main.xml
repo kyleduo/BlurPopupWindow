@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="#fafafa"
+	android:background="#F5EFE6"
+	android:orientation="vertical"
 	tools:context="com.kyleduo.blurpopupwindow.MainActivity">
 
 	<android.support.v7.widget.Toolbar
@@ -17,42 +18,8 @@
 		android:fitsSystemWindows="true"
 		app:titleTextColor="@android:color/white"/>
 
-	<LinearLayout
-		android:id="@+id/button_wrapper"
+	<android.support.v7.widget.RecyclerView
+		android:id="@+id/recycler_view"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/toolbar"
-		android:orientation="horizontal"
-		android:padding="4dp">
-
-		<Button
-			android:id="@+id/button"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Effect 1"/>
-
-		<Button
-			android:id="@+id/button2"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Effect 2"/>
-
-		<Button
-			android:id="@+id/button3"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Effect 3"/>
-	</LinearLayout>
-
-	<TextView
-		android:id="@+id/text"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/button_wrapper"
-		android:layout_centerHorizontal="true"
-		android:layout_marginTop="12dp"
-		android:background="@android:color/white"
-		android:padding="8dp"
-		android:text="@string/dummy_text"/>
-
-</RelativeLayout>
+		android:layout_height="match_parent"/>
+</LinearLayout>
