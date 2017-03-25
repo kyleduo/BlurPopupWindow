@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
 									.setGravity(Gravity.CENTER)
 									.setScaleRatio(0.2f)
 									.setBlurRadius(10)
+									.setAnimationDuration(300)
+									.setTintColor(0x30000000)
 									.build()
 									.show();
 							break;

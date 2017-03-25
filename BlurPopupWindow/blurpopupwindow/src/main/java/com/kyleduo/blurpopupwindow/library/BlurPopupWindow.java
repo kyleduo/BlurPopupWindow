@@ -88,13 +88,18 @@ public class BlurPopupWindow extends FrameLayout {
 		mBlurView.setLayoutParams(lp);
 		mContentLayout.addView(mBlurView);
 
-		mContentView = createContentView();
+		mContentView = createContentView(mContentLayout);
 		if (mContentView != null) {
 			mContentLayout.addView(mContentView);
 		}
 	}
 
-	protected View createContentView() {
+	/**
+	 * Override this to create custom content.
+	 * @param parent the parent where content view would be.
+	 * @return
+	 */
+	protected View createContentView(ViewGroup parent) {
 		return null;
 	}
 

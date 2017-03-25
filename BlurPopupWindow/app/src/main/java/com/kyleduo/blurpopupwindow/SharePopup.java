@@ -22,8 +22,8 @@ public class SharePopup extends BlurPopupWindow {
 	}
 
 	@Override
-	protected View createContentView() {
-		View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_bottom_popup, this, false);
+	protected View createContentView(ViewGroup parent) {
+		View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_bottom_popup, parent, false);
 		LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 		lp.gravity = Gravity.BOTTOM;
 		view.setLayoutParams(lp);

@@ -23,8 +23,8 @@ public class BottomMenu extends BlurPopupWindow {
 	}
 
 	@Override
-	protected View createContentView() {
-		View menu = LayoutInflater.from(getContext()).inflate(R.layout.layout_bottom_menu, this, false);
+	protected View createContentView(ViewGroup parent) {
+		View menu = LayoutInflater.from(getContext()).inflate(R.layout.layout_bottom_menu, parent, false);
 		LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 		lp.gravity = Gravity.BOTTOM;
 		menu.setLayoutParams(lp);
@@ -69,7 +69,7 @@ public class BottomMenu extends BlurPopupWindow {
 	public static class Builder extends BlurPopupWindow.Builder<BottomMenu> {
 		public Builder(Context context) {
 			super(context);
-			this.setScaleRatio(0.25f).setBlurRadius(8).setTintColor(0x30000000);
+			this.setBlurRadius(0).setTintColor(0x70000000);
 		}
 
 		@Override
