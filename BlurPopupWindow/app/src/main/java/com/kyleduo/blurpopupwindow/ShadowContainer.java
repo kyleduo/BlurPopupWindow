@@ -54,7 +54,7 @@ public class ShadowContainer extends LinearLayout {
 
 		if (attrs != null) {
 			TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.ShadowContainer);
-			mShadowColor = ta.getColor(R.styleable.ShadowContainer_sc_shadowColor, mShadowColor);
+            mShadowColor = ta.getColor(R.styleable.ShadowContainer_sc_shadowColor, mShadowColor);
 			ta.recycle();
 		}
 

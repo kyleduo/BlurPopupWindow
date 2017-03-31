@@ -20,7 +20,7 @@
 
 ```groovy
 dependencies {
-    compile 'com.kyleduo.blurpopupwindow:blurpopupwindow:1.0.4'
+    compile 'com.kyleduo.blurpopupwindow:blurpopupwindow:1.0.6'
 }
 ```
 
@@ -71,6 +71,7 @@ builder
 .setTintColor(0x30000000)
 .setDismissOnClickBack(true)
 .setDismissOnTouchBackground(true)
+.setOnDismissListener(listener)
 // bind click listener to id1, id2, ...
 .bindClickListener(listener, id1, id2, ...)
 // bind click listener to content view
