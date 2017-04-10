@@ -151,6 +151,13 @@ public class SharePopup extends BlurPopupWindow {
 }
 ```
 
+### proguard
+
+```
+##---------------Begin: proguard configuration for RenderScript  ----------
+-keep class android.support.v8.renderscript.** { *; }
+##---------------End: proguard configuration for RenderScript  ----------
+```
 
 License
 ---
