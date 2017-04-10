@@ -525,10 +525,12 @@ public class BlurPopupWindow extends FrameLayout {
                 saveCount = canvas.save();
                 canvas.translate(0, -statusBarHeight);
             }
-            if (background == null) {
-                canvas.drawColor(0xffffffff);
+            if (popupWindow.getBlurRadius() > 0) {
+                if (background == null) {
+                    canvas.drawColor(0xffffffff);
+                }
+                sourceView.draw(canvas);
             }
-            sourceView.draw(canvas);
             if (popupWindow.getTintColor() != 0) {
                 canvas.drawColor(popupWindow.getTintColor());
             }
