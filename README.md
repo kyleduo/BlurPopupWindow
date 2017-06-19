@@ -20,11 +20,20 @@
 
 ```groovy
 dependencies {
-    compile 'com.kyleduo.blurpopupwindow:blurpopupwindow:1.0.7'
+    compile 'com.kyleduo.blurpopupwindow:blurpopupwindow:1.0.8'
 }
 ```
 
+#### Enable support render script
 
+```groovy
+android {
+  defaultConfig {
+    renderscriptTargetApi 25
+	renderscriptSupportModeEnabled true
+  }
+}
+```
 
 ### Usage
 
@@ -126,16 +135,15 @@ public class SharePopup extends BlurPopupWindow {
 	}
 
 	@Override
-	protected void onDismiss() {
-		super.onDismiss();
-		int height = getContentView().getMeasuredHeight();
-		ObjectAnimator.ofFloat(getContentView(), "translationY", 0, height).setDuration(getAnimationDuration()).start();
-	}
-
-	@Override
 	protected ObjectAnimator createShowAnimator() {
 		return null;
 	}
+  
+  	@Override
+  	protected ObjectAnimator createDismissAnimator() {
+		int height = getContentView().getMeasuredHeight();
+		return ObjectAnimator.ofFloat(getContentView(), "translationY", 0, height).setDuration(getAnimationDuration());
+  	}
 
 	public static class Builder extends BlurPopupWindow.Builder<SharePopup> {
 		public Builder(Context context) {
