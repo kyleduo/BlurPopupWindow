@@ -2,7 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def VERSION_NAME = "1.0.7"
+def VERSION_NAME = "1.0.8"
+def VERSION_CODE = 2
 def GROUP = "com.kyleduo.blurpopupwindow"
 
 version = VERSION_NAME
@@ -15,7 +16,7 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 1
+        versionCode VERSION_CODE
         versionName VERSION_NAME
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

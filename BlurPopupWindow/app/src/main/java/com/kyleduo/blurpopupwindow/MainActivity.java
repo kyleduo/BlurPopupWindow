@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
             "Dialog like"
     };
 
+    BottomMenu menu;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,45 +44,58 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        rv.setAdapter(new EntranceAdapter());
+        EntranceAdapter adapter = new EntranceAdapter();
+        adapter.setOnItemClickListener(new EntranceAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClicked(int index) {
+                int pos = index % sTitle.length;
+
+                switch (pos) {
+                    case 0:
+                        if (menu == null) {
+                            menu = new BottomMenu.Builder(MainActivity.this).setBlurRadius(2).build();
+                        }
+                        menu.show();
+                        break;
+                    case 1:
+                        new SharePopup.Builder(MainActivity.this).build().show();
+                        break;
+                    case 2:
+                        new BlurPopupWindow.Builder(MainActivity.this)
+                                .setContentView(R.layout.layout_dialog_like)
+                                .bindClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(v.getContext(), "Click Button", Toast.LENGTH_SHORT).show();
+                                    }
+                                }, R.id.dialog_like_bt)
+                                .setGravity(Gravity.CENTER)
+                                .setScaleRatio(0.2f)
+                                .setBlurRadius(10)
+                                .setTintColor(0x30000000)
+                                .build()
+                                .show();
+                        break;
+                }
+            }
+        });
+        rv.setAdapter(adapter);
+
     }
 
     private static class EntranceViewHolder extends RecyclerView.ViewHolder {
         ShadowContainer shadowContainer;
         TextView nameTv;
 
-        public EntranceViewHolder(View itemView) {
+        public EntranceViewHolder(View itemView, final EntranceAdapter.OnItemClickListener listener) {
             super(itemView);
             shadowContainer = (ShadowContainer) itemView.findViewById(container);
             nameTv = (TextView) itemView.findViewById(R.id.entrance_name_tv);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int pos = getAdapterPosition() % sTitle.length;
-                    switch (pos) {
-                        case 0:
-                            BottomMenu bm = new BottomMenu.Builder(v.getContext()).setBlurRadius(2).build();
-                            bm.show();
-                            break;
-                        case 1:
-                            new SharePopup.Builder(v.getContext()).build().show();
-                            break;
-                        case 2:
-                            new BlurPopupWindow.Builder(v.getContext())
-                                    .setContentView(R.layout.layout_dialog_like)
-                                    .bindClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Toast.makeText(v.getContext(), "Click Button", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }, R.id.dialog_like_bt)
-                                    .setGravity(Gravity.CENTER)
-                                    .setScaleRatio(0.2f)
-                                    .setBlurRadius(10)
-                                    .setTintColor(0x30000000)
-                                    .build()
-                                    .show();
-                            break;
+                    if (listener != null) {
+                        listener.onItemClicked(getAdapterPosition());
                     }
                 }
             });
@@ -89,10 +104,20 @@ public class MainActivity extends AppCompatActivity {
 
     private static class EntranceAdapter extends RecyclerView.Adapter<EntranceViewHolder> {
 
+        interface OnItemClickListener {
+            void onItemClicked(int index);
+        }
+
+        private OnItemClickListener mOnItemClickListener;
+
+        public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+            mOnItemClickListener = onItemClickListener;
+        }
+
         @Override
         public EntranceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_entrance, parent, false);
-            return new EntranceViewHolder(view);
+            return new EntranceViewHolder(view, mOnItemClickListener);
         }
 
         @Override

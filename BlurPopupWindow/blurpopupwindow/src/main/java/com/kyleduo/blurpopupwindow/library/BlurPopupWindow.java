@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.AnyThread;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -248,6 +249,7 @@ public class BlurPopupWindow extends FrameLayout {
             mWindowManager.removeView(this);
         } else {
             mAnimating = true;
+            ObjectAnimator.ofFloat(mBlurView, "alpha", mBlurView.getAlpha(), 0).setDuration(getAnimationDuration()).start();
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -276,13 +278,21 @@ public class BlurPopupWindow extends FrameLayout {
     protected void onBlurredImageGot(Bitmap bitmap) {
         mBlurView.setImageBitmap(bitmap);
         if (!mAnimating) {
-            ObjectAnimator.ofFloat(mBlurView, "alpha", 0, 1f).setDuration(mAnimationDuration).start();
+            ObjectAnimator.ofFloat(mBlurView, "alpha", 0, 1f).setDuration(getAnimationDuration()).start();
         }
     }
 
+    /**
+     * When executing show method in this method, should override {@link BlurPopupWindow#createShowAnimator()}
+     * and return null as well.
+     */
     protected void onShow() {
     }
 
+    /**
+     * Do not start any animation in this method. use {@link BlurPopupWindow#createDismissAnimator()} instead.
+     */
+    @CallSuper
     protected void onDismiss() {
         if (mOnDismissListener != null) {
             mOnDismissListener.onDismiss(this);
@@ -290,11 +300,11 @@ public class BlurPopupWindow extends FrameLayout {
     }
 
     protected ObjectAnimator createShowAnimator() {
-        return ObjectAnimator.ofFloat(mContentLayout, "alpha", 0, 1.f).setDuration(mAnimationDuration);
+        return ObjectAnimator.ofFloat(mContentLayout, "alpha", 0, 1.f).setDuration(getAnimationDuration());
     }
 
     protected ObjectAnimator createDismissAnimator() {
-        return ObjectAnimator.ofFloat(mContentLayout, "alpha", mContentLayout.getAlpha(), 0).setDuration(mAnimationDuration);
+        return ObjectAnimator.ofFloat(mContentLayout, "alpha", mContentLayout.getAlpha(), 0).setDuration(getAnimationDuration());
     }
 
     public int getTintColor() {

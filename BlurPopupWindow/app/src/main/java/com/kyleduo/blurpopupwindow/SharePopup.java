@@ -47,10 +47,9 @@ public class SharePopup extends BlurPopupWindow {
     }
 
     @Override
-    protected void onDismiss() {
-        super.onDismiss();
+    protected ObjectAnimator createDismissAnimator() {
         int height = getContentView().getMeasuredHeight();
-        ObjectAnimator.ofFloat(getContentView(), "translationY", 0, height).setDuration(getAnimationDuration()).start();
+        return ObjectAnimator.ofFloat(getContentView(), "translationY", 0, height).setDuration(getAnimationDuration());
     }
 
     @Override
