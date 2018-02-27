@@ -20,7 +20,7 @@
 
 ```groovy
 dependencies {
-    compile 'com.kyleduo.blurpopupwindow:blurpopupwindow:1.0.8'
+    compile 'com.kyleduo.blurpopupwindow:blurpopupwindow:1.0.9'
 }
 ```
 
